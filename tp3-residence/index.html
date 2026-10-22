@@ -26,29 +26,41 @@
     <main class="container py-4">
 
         <!-- Indicateurs -->
-        <section class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
+       <section class="row g-3 mb-4">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-box">
+                    <div class="text-muted">Clients</div>
+                    <div id="statCustomers" class="value">–</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-box">
+                    <div class="text-muted">Produits</div>
+                    <div id="statProducts" class="value">–</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-box">
                     <div class="text-muted">Locations</div>
-                    <div id="statTotal" class="value">0</div>
+                    <div id="statOrders" class="value">–</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-box">
-                    <div class="text-muted">Payées</div>
-                    <div id="statPaid" class="value">0</div>
+                    <div class="text-muted">Montant cumulé</div>
+                    <div id="statRevenue" class="value">–</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-box">
-                    <div class="text-muted">Revenu total</div>
-                    <div id="statRevenue" class="value">0 DH</div>
+                    <div class="text-muted">Locations affichées</div>
+                    <div id="statVisibleOrders" class="value">–</div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-box">
-                    <div class="text-muted">Villas louées</div>
-                    <div id="statVillas" class="value">0</div>
+                    <div class="text-muted">Montant affiché</div>
+                    <div id="statVisibleRevenue" class="value">–</div>
                 </div>
             </div>
         </section>
@@ -56,7 +68,7 @@
         <!-- Recherche -->
         <section class="mb-3">
             <label for="searchInput" class="form-label fw-semibold">
-                Rechercher un client ou un logement
+                Rechercher par nom de client ou un logement
             </label>
             <input type="text" id="searchInput" class="form-control"
                    placeholder="Exemple : Sara ou Villa V1">
@@ -64,30 +76,21 @@
 
         <!-- Filtres -->
         <section class="mb-3">
-            <p class="fw-semibold mb-2">Type de logement</p>
+            <p class="fw-semibold mb-2">Catégorie de produit</p>
             <div id="categoryBar" class="d-flex flex-wrap gap-2 mb-3"></div>
 
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label for="modeSelect" class="form-label fw-semibold">
-                        Mode de location
+                    <label for="statusSelect" class="form-label fw-semibold">
+                        Statut de la location
                     </label>
-                    <select id="modeSelect" class="form-select">
+                    <select id="statusSelect" class="form-select">
                         <option value="all">Tous</option>
-                        <option value="Jour">Par jour</option>
-                        <option value="Semaine">Par semaine</option>
+                        <option value="Livree">Livrée</option>
+                        <option value="En attente">En attente</option>
+                        <option value="Annulee">Annulée</option>
                     </select>
-                </div>
-
-                <div class="col-md-8">
-                    <div class="form-check">
-                        <input type="checkbox" id="paidOnly"
-                               class="form-check-input">
-                        <label for="paidOnly" class="form-check-label">
-                            Afficher uniquement les locations payées
-                        </label>
                     </div>
-                </div>
             </div>
         </section>
 
@@ -96,17 +99,17 @@
         <div id="errorMessage" class="alert alert-danger d-none"></div>
 
         <!-- Zone principale : tableau généré par JavaScript -->
-        <section class="table-responsive">
+       <section class="table-responsive">
             <table class="table align-middle bg-white">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Client</th>
-                        <th>Logement</th>
-                        <th>Type</th>
-                        <th>Durée</th>
+                        <th>Ville</th>
+                        <th>Date</th>
+                        <th>Produits</th>
                         <th>Total</th>
-                        <th>Paiement</th>
+                        <th>Statut</th>
                         <th></th>
                     </tr>
                 </thead>

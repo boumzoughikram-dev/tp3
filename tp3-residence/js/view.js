@@ -1,51 +1,75 @@
 // -------------------------------------------------
-// Fonctions liées au DOM
+// Affichage : tout ce qui touche au DOM
+// (aucun fetch() ici)
 // -------------------------------------------------
 
-const tableBody     = document.querySelector("#rentalsTableBody");
-const resultCount   = document.querySelector("#resultCount");
-const categoryBar   = document.querySelector("#categoryBar");
-const errorMessage  = document.querySelector("#errorMessage");
+const tableBody    = document.querySelector("#rentalsTableBody");
+const resultCount  = document.querySelector("#resultCount");
+const categoryBar  = document.querySelector("#categoryBar");
+const errorMessage = document.querySelector("#errorMessage");
 
-const statTotal     = document.querySelector("#statTotal");
-const statPaid      = document.querySelector("#statPaid");
-const statRevenue   = document.querySelector("#statRevenue");
-const statVillas    = document.querySelector("#statVillas");
+const stats = {
+    customers:      document.querySelector("#statCustomers"),
+    products:       document.querySelector("#statProducts"),
+    orders:         document.querySelector("#statOrders"),
+    revenue:        document.querySelector("#statRevenue"),
+    visibleOrders:  document.querySelector("#statVisibleOrders"),
+    visibleRevenue: document.querySelector("#statVisibleRevenue")
+};
 
-const modalTitle    = document.querySelector("#modalTitle");
-const modalBody     = document.querySelector("#modalBody");
-const rentalModal   = new bootstrap.Modal(
+const modalTitle  = document.querySelector("#modalTitle");
+const modalBody   = document.querySelector("#modalBody");
+const rentalModal = new bootstrap.Modal(
     document.querySelector("#rentalModal")
 );
 
 
-// Montant d'une location = prix unitaire x durée
-const getTotal = (rental) => rental.price * rental.duration;
+// Affichage des statuts (les valeurs des JSON restent sans accents)
+const STATUS_LABELS = {
+    "Livree": "Livrée",
+    "En attente": "En attente",
+    "Annulee": "Annulée"
+};
 
-// Exemple : "3 jour(s)" ou "2 semaine(s)"
-const getDurationText = (rental) =>
-    `${rental.duration} ${rental.mode.toLowerCase()}(s)`;
+const STATUS_BADGES = {
+    "Livree": "bg-success",
+    "En attente": "bg-warning text-dark",
+    "Annulee": "bg-danger"
+};
+
+const statusBadge = (status) =>
+    `<span class="badge ${STATUS_BADGES[status] ?? "bg-secondary"}">
+        ${STATUS_LABELS[status] ?? status}
+     </span>`;
+
+const formatMoney = (amount) => `${amount} DH`;
+
+// Exemple : "3 jour(s)", "2 semaine(s)", "x 1"
+const getQuantityText = (product, quantity) =>
+    product.mode === "Unité"
+        ? `x ${quantity}`
+        : `${quantity} ${product.mode.toLowerCase()}(s)`;
 
 
 // ---------- Une ligne du tableau ----------
-const createRow = (rental) => {
+const createRow = (order) => {
 
-    const payment = rental.paid
-        ? `<span class="badge bg-success">Payée</span>`
-        : `<span class="badge bg-danger">Non payée</span>`;
+    const productNames = order.lines
+        .map(line => line.product.name)
+        .join(", ");
 
     return `
         <tr>
-            <td>#${rental.id}</td>
-            <td class="fw-semibold">${rental.client}</td>
-            <td>${rental.unit}</td>
-            <td>${rental.category}</td>
-            <td>${getDurationText(rental)}</td>
-            <td>${getTotal(rental)} DH</td>
-            <td>${payment}</td>
+            <td>#${order.id}</td>
+            <td class="fw-semibold">${order.customer.name}</td>
+            <td>${order.customer.city}</td>
+            <td>${order.date}</td>
+            <td>${productNames}</td>
+            <td>${formatMoney(order.total)}</td>
+            <td>${statusBadge(order.status)}</td>
             <td>
                 <button class="btn btn-sm btn-outline-dark details-btn"
-                        data-id="${rental.id}">
+                        data-id="${order.id}">
                     Voir
                 </button>
             </td>
@@ -54,12 +78,12 @@ const createRow = (rental) => {
 };
 
 
-// ---------- Afficher les locations (map) ----------
-export const renderItems = (items) => {
+// ---------- Tableau des commandes (map) ----------
+export const renderOrders = (orders) => {
 
-    resultCount.textContent = `${items.length} location(s) affichée(s)`;
+    resultCount.textContent = `${orders.length} location(s) affichée(s)`;
 
-    if (items.length === 0) {
+    if (orders.length === 0) {
         tableBody.innerHTML = `
             <tr>
                 <td colspan="8" class="text-center text-muted py-4">
@@ -70,78 +94,89 @@ export const renderItems = (items) => {
         return;
     }
 
-    tableBody.innerHTML = items.map(createRow).join("");
+    tableBody.innerHTML = orders.map(createRow).join("");
 };
 
 
-// ---------- Afficher les indicateurs ----------
-export const renderStats = (items) => {
-
-    // 1) nombre de locations
-    statTotal.textContent = items.length;
-
-    // 2) locations payées (filter)
-    statPaid.textContent =
-        items.filter(rental => rental.paid).length;
-
-    // 3) revenu total (forEach)
-    let revenue = 0;
-    items.forEach(rental => {
-        revenue += getTotal(rental);
-    });
-    statRevenue.textContent = `${revenue} DH`;
-
-    // 4) locations de villas (filter)
-    statVillas.textContent =
-        items.filter(rental => rental.category === "Villa").length;
+// ---------- Indicateurs ----------
+export const renderStats = (values) => {
+    stats.customers.textContent      = values.customers;
+    stats.products.textContent       = values.products;
+    stats.orders.textContent         = values.orders;
+    stats.revenue.textContent        = formatMoney(values.revenue);
+    stats.visibleOrders.textContent  = values.visibleOrders;
+    stats.visibleRevenue.textContent = formatMoney(values.visibleRevenue);
 };
 
 
-// ---------- Boutons de types (générés depuis les données) ----------
-export const renderCategories = (items, selected) => {
+// ---------- Boutons de catégories (générés depuis les données) ----------
+export const renderCategories = (categories, selected) => {
 
-    const categories = [
-        "all",
-        ...new Set(items.map(rental => rental.category))
-    ];
-
-    categoryBar.innerHTML = categories
+    categoryBar.innerHTML = ["all", ...categories]
         .map(cat => `
             <button class="btn btn-sm category-btn
                 ${cat === selected ? "btn-dark" : "btn-outline-dark"}"
                 data-category="${cat}">
-                ${cat === "all" ? "Tous" : cat}
+                ${cat === "all" ? "Toutes" : cat}
             </button>
         `)
         .join("");
 };
 
 
-// ---------- Détail d'une location ----------
-export const renderDetail = (rental) => {
+// ---------- Détail d'une commande (modal) ----------
+export const renderDetail = (order) => {
 
-    modalTitle.textContent = `Location #${rental.id} – ${rental.unit}`;
+    modalTitle.textContent = `Location #${order.id}`;
+
+    const linesHtml = order.lines
+        .map(line => `
+            <tr>
+                <td>${line.product.name}</td>
+                <td>${formatMoney(line.product.price)}</td>
+                <td>${getQuantityText(line.product, line.quantity)}</td>
+                <td class="text-end">${formatMoney(line.amount)}</td>
+            </tr>
+        `)
+        .join("");
 
     modalBody.innerHTML = `
-        <p><strong>Client :</strong> ${rental.client}</p>
-        <p><strong>Logement :</strong> ${rental.unit} (${rental.category})</p>
-        <p><strong>Mode :</strong> par ${rental.mode.toLowerCase()}</p>
-        <p><strong>Durée :</strong> ${getDurationText(rental)}</p>
-        <p><strong>Prix unitaire :</strong> ${rental.price} DH</p>
-        <p><strong>Total :</strong> ${getTotal(rental)} DH</p>
-        <p><strong>Début :</strong> ${rental.startDate}</p>
-        <p><strong>Paiement :</strong>
-            ${rental.paid ? "Payée" : "Non payée"}</p>
-        <p class="text-muted mb-0">${rental.description}</p>
+        <p class="mb-1"><strong>Commande :</strong> #${order.id}</p>
+        <p class="mb-1"><strong>Client :</strong> ${order.customer.name}</p>
+        <p class="mb-1"><strong>Ville :</strong> ${order.customer.city}</p>
+        <p class="mb-1"><strong>Date :</strong> ${order.date}</p>
+        <p class="mb-3"><strong>Statut :</strong> ${statusBadge(order.status)}</p>
+
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Prix</th>
+                        <th>Quantité</th>
+                        <th class="text-end">Montant</th>
+                    </tr>
+                </thead>
+                <tbody>${linesHtml}</tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3">Total</th>
+                        <th class="text-end">${formatMoney(order.total)}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     `;
 
     rentalModal.show();
 };
 
 
-// ---------- Erreur ----------
+// ---------- Erreur de chargement ----------
 export const renderError = (message) => {
     errorMessage.textContent = message;
     errorMessage.classList.remove("d-none");
     resultCount.textContent = "";
+    tableBody.innerHTML = "";
+    categoryBar.innerHTML = "";
 };

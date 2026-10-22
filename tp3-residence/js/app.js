@@ -1,74 +1,55 @@
 // -------------------------------------------------
-// Orchestration : données + événements + rendu
+// Orchestration : chargement + événements + rendu
 // -------------------------------------------------
 
 import { state } from "./state.js";
-import { fetchData } from "./dataService.js";
+import { loadAllData } from "./dataService.js";
 import {
-    renderItems,
+    getOrderViews,
+    getOrderViewById,
+    filterOrders,
+    getCategories,
+    getStats
+} from "./selectors.js";
+import {
+    renderOrders,
     renderStats,
     renderCategories,
     renderDetail,
     renderError
 } from "./view.js";
 
-const searchInput = document.querySelector("#searchInput");
-const modeSelect  = document.querySelector("#modeSelect");
-const paidOnly    = document.querySelector("#paidOnly");
-const categoryBar = document.querySelector("#categoryBar");
-const tableBody   = document.querySelector("#rentalsTableBody");
-
-
-// ---------- filter() : combine tous les critères ----------
-const getVisibleItems = () => {
-
-    return state.items.filter(rental => {
-
-        const text = state.search.toLowerCase();
-
-        const matchesSearch =
-            rental.client.toLowerCase().includes(text) ||
-            rental.unit.toLowerCase().includes(text);
-
-        const matchesCategory =
-            state.category === "all" ||
-            rental.category === state.category;
-
-        const matchesMode =
-            state.mode === "all" ||
-            rental.mode === state.mode;
-
-        const matchesPaid =
-            !state.paidOnly || rental.paid;
-
-        return (
-            matchesSearch &&
-            matchesCategory &&
-            matchesMode &&
-            matchesPaid
-        );
-    });
-};
+const searchInput  = document.querySelector("#searchInput");
+const statusSelect = document.querySelector("#statusSelect");
+const categoryBar  = document.querySelector("#categoryBar");
+const tableBody    = document.querySelector("#rentalsTableBody");
 
 
 // ---------- render() : state -> traitement -> DOM ----------
 const render = () => {
 
-    const visibleItems = getVisibleItems();
+    const allOrders     = getOrderViews(state);
+    const visibleOrders = filterOrders(allOrders, state);
 
-    renderCategories(state.items, state.category);
-    renderItems(visibleItems);
-    renderStats(visibleItems);   // indicateurs sur les locations visibles
+    renderCategories(getCategories(state.products), state.category);
+    renderOrders(visibleOrders);
+    renderStats(getStats(state, allOrders, visibleOrders));
 };
 
 
-// ---------- Interaction 1 : recherche ----------
+// ---------- Interaction 1 : recherche par nom de client ----------
 searchInput.addEventListener("input", (event) => {
     state.search = event.target.value.trim();
     render();
 });
 
-// ---------- Interaction 2 : filtre par type de logement ----------
+// ---------- Interaction 2 : filtre par statut ----------
+statusSelect.addEventListener("change", (event) => {
+    state.status = event.target.value;
+    render();
+});
+
+// ---------- Interaction 3 : filtre par catégorie de produit ----------
 categoryBar.addEventListener("click", (event) => {
     const button = event.target.closest(".category-btn");
     if (!button) return;
@@ -77,42 +58,35 @@ categoryBar.addEventListener("click", (event) => {
     render();
 });
 
-// ---------- Interaction 3 : mode jour / semaine ----------
-modeSelect.addEventListener("change", (event) => {
-    state.mode = event.target.value;
-    render();
-});
-
-// ---------- Interaction 4 : locations payées uniquement ----------
-paidOnly.addEventListener("change", (event) => {
-    state.paidOnly = event.target.checked;
-    render();
-});
-
-// ---------- Interaction 5 : détail (find) ----------
+// ---------- Interaction 4 : détail d'une commande ----------
 tableBody.addEventListener("click", (event) => {
     const button = event.target.closest(".details-btn");
     if (!button) return;
 
-    const id = Number(button.dataset.id);
-    const rental = state.items.find(item => item.id === id);
+    const order = getOrderViewById(state, Number(button.dataset.id));
 
-    if (rental) {
-        renderDetail(rental);
+    if (order) {
+        renderDetail(order);
     }
 });
 
 
-// ---------- Chargement initial ----------
+// ---------- Initialisation : chargement puis premier rendu ----------
 const init = async () => {
     try {
-        state.items = await fetchData();
+        const data = await loadAllData();
+
+        state.customers = data.customers;
+        state.products  = data.products;
+        state.orders    = data.orders;
+
+        // Premier rendu : uniquement après le chargement des trois sources
         render();
     } catch (error) {
         console.error(error);
         renderError(
-            "Impossible de charger les locations. " +
-            "Vérifiez le fichier data/data.json."
+            "Impossible de charger les données de la résidence. " +
+            error.message
         );
     }
 };
