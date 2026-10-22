@@ -1,0 +1,12 @@
+[
+  { "id": 1,  "name": "ikram boumzough",        "city": "Marrakech",  "phone": "0661-000-001", "active": true  },
+  { "id": 2,  "name": "Yassine El Idrissi", "city": "Casablanca", "phone": "0661-000-002", "active": true  },
+  { "id": 3,  "name": "Amine Tazi",         "city": "Rabat",      "phone": "0661-000-003", "active": true  },
+  { "id": 4,  "name": "Salma Rahmani",      "city": "Marrakech",  "phone": "0661-000-004", "active": true  },
+  { "id": 5,  "name": "Omar Alaoui",        "city": "Fès",        "phone": "0661-000-005", "active": true  },
+  { "id": 6,  "name": "Imane Chraibi",      "city": "Tanger",     "phone": "0661-000-006", "active": true  },
+  { "id": 7,  "name": "Mehdi Berrada",      "city": "Agadir",     "phone": "0661-000-007", "active": false },
+  { "id": 8,  "name": "Nora Lahlou",        "city": "Marrakech",  "phone": "0661-000-008", "active": true  },
+  { "id": 9,  "name": "Karim Fassi",        "city": "Casablanca", "phone": "0661-000-009", "active": true  },
+  { "id": 10, "name": "Hajar Mansouri",     "city": "Rabat",      "phone": "0661-000-010", "active": false }
+]

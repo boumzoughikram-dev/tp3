@@ -1,0 +1,14 @@
+[
+  { "id": 10, "name": "Studio S1",         "category": "Studio",  "mode": "Jour",    "price": 300,  "stock": 1,  "description": "Studio meublé, idéal pour un court séjour." },
+  { "id": 11, "name": "Studio S2",         "category": "Studio",  "mode": "Semaine", "price": 1800, "stock": 1,  "description": "Studio avec kitchenette, tarif à la semaine." },
+  { "id": 12, "name": "Studio S3",         "category": "Studio",  "mode": "Jour",    "price": 300,  "stock": 1,  "description": "Studio calme au rez-de-chaussée." },
+  { "id": 13, "name": "Appartement F2-01", "category": "F2",      "mode": "Jour",    "price": 450,  "stock": 1,  "description": "F2 lumineux avec balcon." },
+  { "id": 14, "name": "Appartement F2-04", "category": "F2",      "mode": "Semaine", "price": 2800, "stock": 1,  "description": "F2 équipé pour séjour professionnel." },
+  { "id": 15, "name": "Appartement F3-02", "category": "F3",      "mode": "Semaine", "price": 3800, "stock": 1,  "description": "F3 familial, deux chambres." },
+  { "id": 16, "name": "Appartement F3-05", "category": "F3",      "mode": "Jour",    "price": 600,  "stock": 1,  "description": "F3 avec grande terrasse." },
+  { "id": 17, "name": "Villa V1",          "category": "Villa",   "mode": "Jour",    "price": 1500, "stock": 1,  "description": "Villa pour week-end entre amis." },
+  { "id": 18, "name": "Villa V2",          "category": "Villa",   "mode": "Semaine", "price": 9000, "stock": 1,  "description": "Villa avec piscine." },
+  { "id": 19, "name": "Villa V3",          "category": "Villa",   "mode": "Semaine", "price": 9000, "stock": 1,  "description": "Villa avec jardin et piscine privés." },
+  { "id": 20, "name": "Service de ménage", "category": "Service", "mode": "Unité",   "price": 150,  "stock": 30, "description": "Ménage complet du logement." },
+  { "id": 21, "name": "Petit-déjeuner",    "category": "Service", "mode": "Jour",    "price": 60,   "stock": 50, "description": "Petit-déjeuner livré au logement." }
+]
