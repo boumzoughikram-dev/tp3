@@ -1,6 +1,4 @@
-// -------------------------------------------------
 // Chargement des données (aucun accès au DOM ici)
-// -------------------------------------------------
 
 const DATA_FILES = {
     customers: "data/customers.json",
@@ -13,8 +11,7 @@ export const loadJson = async (path) => {
     try {
         const response = await fetch(path);
 
-        // fetch() ne lève pas d'erreur pour un 404 :
-        // il faut vérifier response.ok soi-même.
+       
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
@@ -32,8 +29,7 @@ export const loadJson = async (path) => {
     }
 };
 
-// Vérifie que les identifiants des commandes pointent vers des données existantes.
-// Évite de poursuivre silencieusement avec des données invalides.
+
 export const validateData = ({ customers, products, orders }) => {
 
     orders.forEach(order => {

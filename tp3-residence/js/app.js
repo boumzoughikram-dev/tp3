@@ -1,6 +1,5 @@
-// -------------------------------------------------
+
 // Orchestration : chargement + événements + rendu
-// -------------------------------------------------
 
 import { state } from "./state.js";
 import { loadAllData } from "./dataService.js";
@@ -25,7 +24,7 @@ const categoryBar  = document.querySelector("#categoryBar");
 const tableBody    = document.querySelector("#rentalsTableBody");
 
 
-// ---------- render() : state -> traitement -> DOM ----------
+// render()
 const render = () => {
 
     const allOrders     = getOrderViews(state);
@@ -37,19 +36,19 @@ const render = () => {
 };
 
 
-// ---------- Interaction 1 : recherche par nom de client ----------
+// recherche par nom de client 
 searchInput.addEventListener("input", (event) => {
     state.search = event.target.value.trim();
     render();
 });
 
-// ---------- Interaction 2 : filtre par statut ----------
+//  filtre par statut 
 statusSelect.addEventListener("change", (event) => {
     state.status = event.target.value;
     render();
 });
 
-// ---------- Interaction 3 : filtre par catégorie de produit ----------
+// filtre par catégorie de produit 
 categoryBar.addEventListener("click", (event) => {
     const button = event.target.closest(".category-btn");
     if (!button) return;
@@ -58,7 +57,7 @@ categoryBar.addEventListener("click", (event) => {
     render();
 });
 
-// ---------- Interaction 4 : détail d'une commande ----------
+// détail d'une commande 
 tableBody.addEventListener("click", (event) => {
     const button = event.target.closest(".details-btn");
     if (!button) return;
@@ -71,7 +70,7 @@ tableBody.addEventListener("click", (event) => {
 });
 
 
-// ---------- Initialisation : chargement puis premier rendu ----------
+// chargement puis premier rendu 
 const init = async () => {
     try {
         const data = await loadAllData();

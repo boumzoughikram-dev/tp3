@@ -1,25 +1,19 @@
-// -------------------------------------------------
-// Relier, filtrer et calculer (aucun accès au DOM ici)
-// -------------------------------------------------
+// find() 
 
-// ---------- Relations : find() ----------
-
-// order.customerId -> objet client
+// order.customerId
 export const getCustomerById = (customers, customerId) =>
     customers.find(customer => customer.id === customerId);
 
-// item.productId -> objet produit
+// item.productId
 export const getProductById = (products, productId) =>
     products.find(product => product.id === productId);
 
 
-// ---------- Calculs ----------
-
-// montant ligne = prix du produit x quantité
+// Calculs 
 export const getLineAmount = (product, quantity) =>
     product.price * quantity;
 
-// Une commande avec ses lignes complètes : map()
+//  map()
 export const getOrderLines = (order, products) =>
     order.items.map(item => {
         const product = getProductById(products, item.productId);
@@ -31,7 +25,7 @@ export const getOrderLines = (order, products) =>
         };
     });
 
-// montant total = somme des montants de toutes les lignes : forEach()
+// montant total  : forEach()
 export const getOrderTotal = (lines) => {
     let total = 0;
     lines.forEach(line => {
@@ -41,8 +35,7 @@ export const getOrderTotal = (lines) => {
 };
 
 
-// ---------- Commande enrichie ----------
-// Reconstruit client + produits + montants à partir des identifiants.
+// Commande enrichie 
 export const buildOrderView = (order, state) => {
 
     const lines = getOrderLines(order, state.products);
@@ -66,8 +59,7 @@ export const getOrderViewById = (state, orderId) => {
 };
 
 
-// ---------- Filtres : filter() ----------
-// Les trois critères fonctionnent ensemble.
+// Filtres : filter()
 export const filterOrders = (orderViews, state) => {
 
     const text = state.search.toLowerCase();
@@ -97,12 +89,12 @@ export const filterOrders = (orderViews, state) => {
 };
 
 
-// ---------- Catégories disponibles (depuis products.json) ----------
+// Catégories disponibles (depuis products.json)
 export const getCategories = (products) =>
     [...new Set(products.map(product => product.category))];
 
 
-// ---------- Indicateurs ----------
+// Indicateurs 
 export const getStats = (state, allOrders, visibleOrders) => ({
     customers: state.customers.length,
     products: state.products.length,

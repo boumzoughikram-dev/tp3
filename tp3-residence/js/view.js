@@ -1,7 +1,4 @@
-// -------------------------------------------------
 // Affichage : tout ce qui touche au DOM
-// (aucun fetch() ici)
-// -------------------------------------------------
 
 const tableBody    = document.querySelector("#rentalsTableBody");
 const resultCount  = document.querySelector("#resultCount");
@@ -51,7 +48,7 @@ const getQuantityText = (product, quantity) =>
         : `${quantity} ${product.mode.toLowerCase()}(s)`;
 
 
-// ---------- Une ligne du tableau ----------
+// Une ligne du tableau 
 const createRow = (order) => {
 
     const productNames = order.lines
@@ -78,7 +75,7 @@ const createRow = (order) => {
 };
 
 
-// ---------- Tableau des commandes (map) ----------
+// Tableau des commandes (map) 
 export const renderOrders = (orders) => {
 
     resultCount.textContent = `${orders.length} location(s) affichée(s)`;
@@ -98,7 +95,7 @@ export const renderOrders = (orders) => {
 };
 
 
-// ---------- Indicateurs ----------
+// Indicateurs
 export const renderStats = (values) => {
     stats.customers.textContent      = values.customers;
     stats.products.textContent       = values.products;
@@ -109,7 +106,7 @@ export const renderStats = (values) => {
 };
 
 
-// ---------- Boutons de catégories (générés depuis les données) ----------
+// Boutons de catégories 
 export const renderCategories = (categories, selected) => {
 
     categoryBar.innerHTML = ["all", ...categories]
@@ -124,7 +121,7 @@ export const renderCategories = (categories, selected) => {
 };
 
 
-// ---------- Détail d'une commande (modal) ----------
+// Détail d'une commande (modal) 
 export const renderDetail = (order) => {
 
     modalTitle.textContent = `Location #${order.id}`;
@@ -172,7 +169,7 @@ export const renderDetail = (order) => {
 };
 
 
-// ---------- Erreur de chargement ----------
+// Erreur de chargement 
 export const renderError = (message) => {
     errorMessage.textContent = message;
     errorMessage.classList.remove("d-none");
